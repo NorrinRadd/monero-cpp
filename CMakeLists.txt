@@ -7,7 +7,7 @@ if (WIN32)
   add_definitions( "-DWIN32_LEAN_AND_MEAN" )
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wa,-mbig-obj -O2 -fPIC -std=c++14 -F/Library/Frameworks -pthread -lcrypto -lcrypt32 -lbcrypt") 
 else()
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++14 -F/Library/Frameworks -pthread")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++14 -F/Library/Frameworks -pthread -target ${MON_VERSION}")
 endif()
 
 #SET(CMAKE_C_COMPILER /path/to/c/compiler)
@@ -133,7 +133,12 @@ add_definitions(-DHAVE_HIDAPI)
 # Monero
 #############
 
-set(MONERO_PROJECT_BUILD "${MONERO_PROJECT}/build/release" CACHE STRING "Monero project build directory")
+if (WIN32)
+    set(MONERO_PROJECT_BUILD "${MONERO_PROJECT}/build/release" CACHE STRING "Monero project build directory")
+else()
+    set(MONERO_PROJECT_BUILD "${CMAKE_SOURCE_DIR}/external-libs/monero-${MON_VERSION}/release" CACHE STRING "Monero project build directory")
+endif()
+
 message(STATUS "Using monero-project build: " ${MONERO_PROJECT_BUILD})
 
 list(APPEND CMAKE_MODULE_PATH "${MONERO_PROJECT}/cmake")
@@ -179,6 +184,10 @@ else()
     message(FATAL_ERROR "Found libunbound includes, but could not find libunbound library. Please make sure you have installed libunbound or libunbound-dev or the equivalent")
   endif()
 endif()
+
+############
+# Misc Libs
+############
 
 add_library(rpc_base STATIC IMPORTED)
 set_target_properties(rpc_base PROPERTIES IMPORTED_LOCATION
@@ -279,10 +288,14 @@ set(
     src/wallet/monero_wallet_full.cpp
 )
 
-if (BUILD_LIBRARY)
-  add_library(monero-cpp SHARED ${LIBRARY_SRC_FILES})
 
-  target_include_directories(monero-cpp PUBLIC
+# 
+# TODO: Need if statement here to calculate the library name prior to this block.
+# 
+if (BUILD_LIBRARY)
+  add_library(monero-cpp-${MON_VERSION} STATIC ${LIBRARY_SRC_FILES})
+
+  target_include_directories(monero-cpp-${MON_VERSION} PUBLIC
       ${CMAKE_CURRENT_SOURCE_DIR}/include
       src
       "${MONERO_PROJECT}/contrib/epee/include"
@@ -304,7 +317,7 @@ if (BUILD_LIBRARY)
       ${UNBOUND_INCLUDE_DIR}
   )
   
-  target_link_libraries(monero-cpp
+  target_link_libraries(monero-cpp-${MON_VERSION}
       wallet
       rpc_base
       net
@@ -347,7 +360,7 @@ if (WIN32)
 endif()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    target_link_options(monero-cpp PRIVATE "-z" "noexecstack")
+    target_link_options(monero-cpp-${MON_VERSION} PRIVATE "-z" "noexecstack")
 endif()
 
   INSTALL(FILES src/daemon/monero_daemon.h
@@ -361,7 +374,7 @@ endif()
           src/wallet/monero_wallet_keys.h
           src/wallet/monero_wallet_model.h
           DESTINATION include/wallet)
-  INSTALL(TARGETS monero-cpp
+  INSTALL(TARGETS monero-cpp-${MON_VERSION}
           RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR} COMPONENT Runtime
           LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Runtime
           ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR} COMPONENT Development)
