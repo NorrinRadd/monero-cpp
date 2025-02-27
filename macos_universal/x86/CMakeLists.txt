@@ -8,6 +8,10 @@ cmake_minimum_required(VERSION 3.4.1)
 #SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fsanitize=address")
 #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++14 -F/Library/Frameworks -pthread -fsanitize=address")    # TODO: way to enable sanitize?  get runtime error with this on
 
+set(CMAKE_CXX_COMPILER_FORCED True)
+set(CMAKE_C_COMPILER_FORCED True)
+set(CMAKE_TRY_COMPILE_TARGET_TYPE "STATIC_LIBRARY")
+
 project(MoneroCppLibrary)
 
 set(BUILD_LIBRARY ON)
