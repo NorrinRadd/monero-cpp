@@ -93,7 +93,7 @@ else
             echo \
             "set(FRAMEWORK_DIR \"contrib/depends/$CUR_VERSION/native/SDK/System/Library/Frameworks\")" \
             >> ../../$ARM64_TOOLCHAIN &&
-            cd ../.. &&
+            cd ../..
 
             # build monero-project
             printf "\nBuilding monero-project for aarch64 Darwin\n"
