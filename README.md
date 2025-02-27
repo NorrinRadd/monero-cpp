@@ -215,8 +215,11 @@ For example, [monero-java](https://github.com/woodser/monero-java) compiles this
     ```
 3. Build monero-project, located as a submodule at ./external/monero-project. Install [dependencies](https://github.com/monero-project/monero#dependencies) as needed for your system, then build with e.g.: `make release-static -j6`
 4. Link to this library's source files in your application, or build monero-cpp to a shared library in ./build: `./bin/build_libmonero_cpp.sh`
+
 > Note: The above process will only build a native macOS binary dependent on your device's platform. To create a universal binary, use the build.sh script provided in [macos_universal](macos_universal).
-> CAVEATS: This script MUST BE RAN FROM WITHIN THE macos_universal directory. As of writing, the script has only been verified to work properly on a Debian 12 system. In theory, there is nothing stopping the universal binary from being cross-compiled on other platforms, although Windows in particular would require some extra changes in order to work.
+> CAVEATS: 
+- This script MUST BE RAN FROM WITHIN THE macos_universal directory. As of writing, the script has only been verified to work properly on a Debian 12 system. In theory, there is nothing stopping the universal binary from being cross-compiled on other platforms, although Windows in particular would require some extra changes in order to work.
+- Right now, you must manually create folders named "build" inside of the 3 subfolders of macosuniversal for the scripts to work properly
 
 ### Windows
 
