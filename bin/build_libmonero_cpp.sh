@@ -34,6 +34,9 @@ elif [ $CUR_OS == "Darwin" ]; then
     # monero-project
     printf "\nBuilding native release static version of monero-project for ${CURRENT_ARCH}\n"
     make release-static -j$HOST_NCORES || exit 1
+    rm -rf ../../external-libs/$VERSION/monero-project
+    mkdir -p ../../external-libs/$VERSION/monero-project/ &&
+    mv build/release ../../external-libs/$VERSION/monero-project/
     cd ../..
 
     # monero-cpp
