@@ -135,25 +135,26 @@ else
         # Build monero-cpp x86_64
         printf "\nBuilding x86_64 monero-cpp for Darwin\n"
         cd ../../ &&
-        rm -rf build/x86_64-apple-darwin/release &&
-        rm -rf build/aarch64-apple-darwin/release &&
-        mkdir -p build/x86_64-apple-darwin/release &&
-        mkdir -p build/aarch64-apple-darwin/release
+        rm -rf build/x86_64-apple-darwin11/release &&
+        rm -rf build/aarch64-apple-darwin11/release &&
+        rm -rf build/darwin &&
+        mkdir -p build/x86_64-apple-darwin11/release &&
+        mkdir -p build/aarch64-apple-darwin11/release &&
+        mkdir -p build/darwin/release
         
-        cd build/x86_64-apple-darwin/release && 
+        cd build/x86_64-apple-darwin11/release && 
         cmake -j$HOST_NCORES -DTARGET=Darwin -D MON_VERSION=x86_64-apple-darwin11 -D CMAKE_TOOLCHAIN_FILE=../../../external/monero-project/$X86_64_TOOLCHAIN ../../.. &&
         make -j$HOST_NCORES
         
         # Build monero-cpp arm64
         printf "\nBuilding aarch64 monero-cpp for Darwin\n"
-        cd ../../aarch64-apple-darwin/release && 
+        cd ../../aarch64-apple-darwin11/release && 
         cmake -j$HOST_NCORES -DTARGET=Darwin -D MON_VERSION=aarch64-apple-darwin11 -D CMAKE_TOOLCHAIN_FILE=../../../external/monero-project/$ARM64_TOOLCHAIN ../../.. &&
         make -j$HOST_NCORES
         
         # lipo the two builds together
         cd ../../..
-        mkdir build/darwin/release
-        ./external/monero-project/contrib/depends/${CURRENT_ARCH}-apple-darwin11/native/bin/${CURRENT_ARCH}-apple-darwin11-lipo -create -output build/darwin/release/libmonero-cpp.dylib build/x86_64-apple-darwin/release/libmonero-cpp.dylib build/aarch64-apple-darwin/release/libmonero-cpp.dylib
+        ./external/monero-project/contrib/depends/${CURRENT_ARCH}-apple-darwin11/native/bin/${CURRENT_ARCH}-apple-darwin11-lipo -create -output build/darwin/release/libmonero-cpp.dylib build/x86_64-apple-darwin11/release/libmonero-cpp.dylib build/aarch64-apple-darwin11/release/libmonero-cpp.dylib
 
     else
         # Building 1 architecture for any platform
@@ -163,7 +164,7 @@ else
         printf "\nBuilding for ${VERSION}\n"
 
         # Make dependencies.
-        if [ $SKIP_MP != 1 ]; then
+        if [ -z $SKIP_MP ]; then
             printf "\nBuilding compilation dependencies\n"
             cd contrib/depends &&
             make HOST=$VERSION -j$HOST_NCORES &&
